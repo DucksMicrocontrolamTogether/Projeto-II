@@ -1,0 +1,639 @@
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 1
+
+
+
+
+
+       MCS-51 Family Macro Assembler   A S E M - 5 1   V 1.3
+       =====================================================
+
+
+
+	Source File:	..\main.asm
+	Object File:	Debug.HEX
+	List File:	Debug.lst
+
+
+
+ Line  I  Addr  Code            Source
+
+    1:				;====================================================================
+    2:				; DEFINITIONS
+    3:				;====================================================================
+    4:		D      0090	printPort equ P1
+    5:		R	 R0	regTable equ R0
+    6:		R	 R2	nPrint equ R2
+    7:		N      00C8	memTable equ 200
+    8:		B      00A7	displayX equ P2.7
+    9:				;====================================================================
+   10:				; VARIABLES
+   11:				;====================================================================
+   12:
+   13:				;====================================================================
+   14:				; RESET and INTERRUPT VECTORS
+   15:				;====================================================================
+   16:
+   17:				    ; Reset Vector
+   18:		N      0000		org   0000h
+   19:	  0000	02 01 00		JMP   Start
+   20:
+   21:					;Externa 0
+   22:		N      0003		org 0003h
+   23:	  0003	12 01 19		CALL externa0
+   24:	  0006	32			RETI
+   25:
+   26:					; Timer0
+   27:		N      000B		org 000Bh
+   28:	  000B	B2 90			CPL P1.0
+   29:					;CALL timer0Rotina
+   30:	  000D	32			RETI
+   31:					;externa 1
+   32:		N      0013		org 0013h
+   33:	  0013	12 01 6D		CALL externa1
+   34:	  0016	32			RETI
+   35:
+   36:
+   37:					;Timer 1
+   38:		N      001B		ORG 1BH
+   39:
+   40:				;====================================================================
+   41:				; CODE SEGMENT
+   42:				;====================================================================
+   43:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 2
+
+
+
+ Line  I  Addr  Code            Source
+
+   44:		N      0100	    ORG   0100h
+   45:	  0100			Start:
+   46:					;MainBemFeita
+   47:	  0100	12 01 05		CALL Reset_inicial
+   48:	  0103	80 FE			JMP $
+   49:					;Coloca a distancia em R5 e o tempo em R4
+   50:					;MOV R4,#1
+   51:					;MOV R5,#39
+   52:					;CALL checkSpeed
+   53:					;JMP $
+   54:
+   55:	  0105			Reset_inicial:
+   56:					;P0.1 indica que esta na fase da captura de dados
+   57:	  0105	D2 81			SETB P0.1
+   58:					;Habilitando as interupções
+   59:	  0107	D2 AF			SETB EA
+   60:					;Habilitando a interupção externa 0
+   61:	  0109	D2 A8			SETB EX0
+   62:					;Transformando em interupção por borda
+   63:	  010B	D2 88			SETB IT0
+   64:	  010D	12 01 15		CALL Arruma_Timer
+   65:	  0110	7D 00			MOV R5,#0
+   66:	  0112	7E 00			MOV R6,#0
+   67:	  0114	22			RET
+   68:
+   69:
+   70:
+   71:	  0115			Arruma_Timer:
+   72:					; Timer 0 e Timer 1, modo 1 (contador de 16 bits)
+   73:	  0115	75 89 11		MOV TMOD, #00010001b
+   74:					;Liga interrupções, e liga interrupção de timer0
+   75:					;SETB ET0
+   76:	  0118	22			RET
+   77:
+   78:	  0119			externa0:
+   79:	  0119	C2 AA			CLR EX1
+   80:	  011B	C2 A8			CLR EX0
+   81:	  011D	B2 A3			CPL P2.3
+   82:	  011F	30 A3 06		JNB P2.3,FinalizaContagem ;if(P2.3 != 0) FinalizaContagem
+   83:	  0122	12 01 2C		CALL inicia_contagem_frequencia ;inicia contagem
+   84:	  0125	D2 A8			SETB EX0
+   85:	  0127	22			RET
+   86:	  0128			FinalizaContagem:
+   87:	  0128	12 01 35		CALL para_contagem_frequencia
+   88:					;SETB EX0
+   89:	  012B	22			RET
+   90:
+   91:	  012C			inicia_contagem_frequencia:
+   92:	  012C	75 8C 00		MOV TH0,#0
+   93:	  012F	75 8A 00		MOV TL0,#0
+   94:
+   95:					;Inicializa o timer0
+   96:	  0132	D2 8C		    SETB TR0
+   97:	  0134	22			RET
+   98:
+   99:	  0135			para_contagem_frequencia:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 3
+
+
+
+ Line  I  Addr  Code            Source
+
+  100:	  0135	C2 8C			CLR TR0
+  101:					;Salvando o valor contado
+  102:	  0137	E5 8A			MOV A,TL0
+  103:	  0139	FB			MOV R3,A
+  104:	  013A	E5 8C			MOV A,TH0
+  105:	  013C	FC			MOV R4,A
+  106:
+  107:	  013D	BD 00 0C		CJNE R5,#0,compara_valores ; if(R5 != 0) vai para compara_valores
+  108:	  0140	BE 00 09		CJNE R6,#0,compara_valores ; if(R6 != 0) vai para compara_valores
+  109:	  0143			carrega_tempos:
+  110:	  0143	EB			MOV A,R3
+  111:	  0144	FD			MOV R5,A
+  112:	  0145	EC			MOV A,R4
+  113:	  0146	FE			MOV R6,A
+  114:	  0147	31 2C			CALL inicia_contagem_frequencia
+  115:	  0149	D2 A8			SETB EX0
+  116:	  014B	22			RET
+  117:
+  118:					;Compara os valores
+  119:	  014C			compara_valores:
+  120:					;Tempo L novo
+  121:	  014C	EE			MOV A,R6
+  122:					;Tempo L antigo
+  123:	  014D	9C			SUBB A,R4
+  124:
+  125:					;Nosso threshold eh de 1 unidades de timer
+  126:					;A esta segurando a diferença entre TL
+  127:	  014E	C3			CLR C
+  128:	  014F	94 01			SUBB A,#1
+  129:
+  130:	  0151	50 03			JNC mudou_frequecia
+  131:	  0153	D2 A8			SETB EX0
+  132:	  0155	22			RET
+  133:	  0156			mudou_frequecia:
+  134:					;Inicializa o timer1
+  135:	  0156	D2 8E		    SETB TR1
+  136:					;liga a interrupcao 1
+  137:	  0158	D2 AA			SETB EX1
+  138:	  015A	D2 A3			SETB P2.3
+  139:	  015C	7E 00			MOV R6,#0
+  140:	  015E	7D 00			MOV R5,#0
+  141:	  0160	75 90 AA		MOV P1, #10101010B
+  142:	  0163	22			RET
+  143:
+  144:	  0164			Delay:	;Um segundo de delay
+  145:	  0164	7F C8							MOV R7,#200
+  146:	  0166	7E 01		LOOP:				MOV R6,#1
+  147:	  0168	DD FE							DJNZ R5,$
+  148:	  016A	DF FA							DJNZ R7,LOOP
+  149:	  016C	22							RET
+  150:				;;;;;;;;;;;;;;;;;;;;;;;;;;;ESPELHO P/ EX1 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  151:
+  152:
+  153:
+  154:	  016D			externa1:
+  155:	  016D	C2 AA			CLR EX1
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 4
+
+
+
+ Line  I  Addr  Code            Source
+
+  156:	  016F	B2 A3			CPL P2.3; OLHAR
+  157:	  0171	30 A3 06		JNB P2.3,FinalizaContagem2 ;if(P2.3 != 0) FinalizaContagem
+  158:	  0174	12 01 7E		CALL inicia_contagem_frequencia2 ;inicia contagem
+  159:	  0177	D2 AA			SETB EX1
+  160:	  0179	22			RET
+  161:	  017A			FinalizaContagem2:
+  162:	  017A	12 01 89		CALL para_contagem_frequencia2
+  163:					;SETB EX1
+  164:	  017D	22			RET
+  165:
+  166:	  017E			inicia_contagem_frequencia2:
+  167:	  017E	75 8C 00		MOV TH0,#0
+  168:	  0181	75 8A 00		MOV TL0,#0
+  169:
+  170:					;Inicializa o timer0
+  171:	  0184	D2 8C		    SETB TR0
+  172:	  0186	D2 AA			SETB EX1
+  173:	  0188	22			RET
+  174:
+  175:	  0189			para_contagem_frequencia2:
+  176:	  0189	C2 8C			CLR TR0
+  177:					;Salvando o valor contado
+  178:	  018B	E5 8A			MOV A,TL0
+  179:	  018D	FB			MOV R3,A
+  180:	  018E	E5 8C			MOV A,TH0
+  181:	  0190	FC			MOV R4,A
+  182:
+  183:	  0191	BD 00 0A		CJNE R5,#0,compara_valores2; if(R5 != 0) vai para compara_valores
+  184:	  0194	BE 00 07		CJNE R6,#0,compara_valores2 ; if(R6 != 0) vai para compara_valores
+  185:	  0197			carrega_tempos2:
+  186:	  0197	EB			MOV A,R3
+  187:	  0198	FD			MOV R5,A
+  188:	  0199	EC			MOV A,R4
+  189:	  019A	FE			MOV R6,A
+  190:	  019B	31 7E			CALL inicia_contagem_frequencia2
+  191:	  019D	22			RET
+  192:
+  193:					;Compara os valores
+  194:	  019E			compara_valores2:
+  195:					;Tempo L novo
+  196:	  019E	EE			MOV A,R6
+  197:					;Tempo L antigo
+  198:	  019F	9C			SUBB A,R4
+  199:
+  200:					;Nosso threshold eh de 1 unidades de timer
+  201:					;A esta segurando a diferença entre TL
+  202:	  01A0	C3			CLR C
+  203:	  01A1	94 01			SUBB A,#1
+  204:
+  205:	  01A3	50 03			JNC mudou_frequecia2
+  206:	  01A5	D2 AA			SETB EX1
+  207:	  01A7	22			RET
+  208:	  01A8			mudou_frequecia2:
+  209:					;Finaliza o timer1
+  210:	  01A8	C2 8E		    CLR TR1
+  211:					;
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 5
+
+
+
+ Line  I  Addr  Code            Source
+
+  212:	  01AA	E5 8D			MOV A,TH1
+  213:	  01AC	75 A0 00		MOV P2,#0
+  214:	  01AF	22			RET
+  215:
+  216:
+  217:
+  218:
+  219:
+  220:
+  221:				;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  222:
+  223:	  01B0			ROTINA:
+  224:	  01B0	B2 A5		       CPL P2.5 ; complementa estado do bit 0 do PORT 1
+  225:	  01B2	32		       RETI ; retorno da rotina interrupção
+  226:
+  227:	  01B3			configTimersToDisplay:
+  228:					;Configurando tempo do timer0
+  229:	  01B3	7B 1E			MOV R3,#30
+  230:
+  231:					; Timer 0 e Timer 1, modo 1 (contador de 16 bits)
+  232:	  01B5	75 89 11		MOV TMOD, #00010001b
+  233:
+  234:					;Liga interrupções, e liga interrupção de timer0
+  235:	  01B8	D2 AF			SETB EA
+  236:	  01BA	D2 A9			SETB ET0
+  237:					;SETB ET1
+  238:
+  239:					;Inicializa o timer0
+  240:	  01BC	D2 8C		    SETB TR0
+  241:					;SETB TR1
+  242:
+  243:					;Configuração da quantidade de tempo
+  244:					;MOV TH0, 255
+  245:					;MOV TL0, 0
+  246:
+  247:	  01BE	22			RET
+  248:
+  249:	  01BF			loadNumbers:
+  250:	  01BF	78 C8			MOV regTable,#memTable
+  251:					;Caso seja o número 0
+  252:	  01C1	76 C0			MOV @regTable,#11000000b
+  253:
+  254:					;Passando para próximo endereço
+  255:	  01C3	E8			MOV A, regTable
+  256:	  01C4	24 01			ADD A,#1
+  257:	  01C6	F8			MOV regTable, A
+  258:
+  259:					;Caso seja o número 1
+  260:	  01C7	76 79			MOV @regTable,#1111001b
+  261:
+  262:					;Passando para próximo endereço
+  263:	  01C9	E8			MOV A, regTable
+  264:	  01CA	24 01			ADD A,#1
+  265:	  01CC	F8			MOV regTable, A
+  266:
+  267:					;Caso seja o número 2
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 6
+
+
+
+ Line  I  Addr  Code            Source
+
+  268:	  01CD	76 A4			MOV @regTable,#10100100b
+  269:
+  270:					;Passando para próximo endereço
+  271:	  01CF	E8			MOV A, regTable
+  272:	  01D0	24 01			ADD A,#1
+  273:	  01D2	F8			MOV regTable, A
+  274:
+  275:					;Caso seja o número 3
+  276:	  01D3	76 B0			MOV @regTable,#10110000b
+  277:
+  278:					;Passando para próximo endereço
+  279:	  01D5	E8			MOV A, regTable
+  280:	  01D6	24 01			ADD A,#1
+  281:	  01D8	F8			MOV regTable, A
+  282:
+  283:					;Caso seja o número 4
+  284:	  01D9	76 19			MOV @regTable,#00011001b
+  285:
+  286:					;Passando para próximo endereço
+  287:	  01DB	E8			MOV A, regTable
+  288:	  01DC	24 01			ADD A,#1
+  289:	  01DE	F8			MOV regTable, A
+  290:
+  291:					;Caso seja o número 5
+  292:	  01DF	76 12			MOV @regTable,#00010010b
+  293:
+  294:					;Passando para próximo endereço
+  295:	  01E1	E8			MOV A, regTable
+  296:	  01E2	24 01			ADD A,#1
+  297:	  01E4	F8			MOV regTable, A
+  298:
+  299:					;Caso seja o número 6
+  300:	  01E5	76 82			MOV @regTable,#10000010b
+  301:
+  302:					;Passando para próximo endereço
+  303:	  01E7	E8			MOV A, regTable
+  304:	  01E8	24 01			ADD A,#1
+  305:	  01EA	F8			MOV regTable, A
+  306:
+  307:					;Caso seja o número 7
+  308:	  01EB	76 78			MOV @regTable,#1111000b
+  309:
+  310:					;Passando para próximo endereço
+  311:	  01ED	E8			MOV A, regTable
+  312:	  01EE	24 01			ADD A,#1
+  313:	  01F0	F8			MOV regTable, A
+  314:
+  315:					;Caso seja o número 8
+  316:	  01F1	76 00			MOV @regTable,#00000000b
+  317:
+  318:					;Passando para próximo endereço
+  319:	  01F3	E8			MOV A, regTable
+  320:	  01F4	24 01			ADD A,#1
+  321:	  01F6	F8			MOV regTable, A
+  322:
+  323:					;Caso seja o número 9
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 7
+
+
+
+ Line  I  Addr  Code            Source
+
+  324:	  01F7	76 60			MOV @regTable,#01100000b
+  325:
+  326:					;Passando para próximo endereço
+  327:	  01F9	E8			MOV A, regTable
+  328:	  01FA	24 01			ADD A,#1
+  329:	  01FC	F8			MOV regTable, A
+  330:
+  331:	  01FD	22			RET
+  332:
+  333:	  01FE			writeNumber:
+  334:					;Colocando o ponteiro pra posição inicial dos números
+  335:	  01FE	78 C8			MOV regTable,#memTable
+  336:
+  337:					;Colocando o ponteiro no número correto a ser escrito
+  338:	  0200	EA			MOV A, nPrint
+  339:	  0201	28			ADD A, regTable
+  340:
+  341:					;Escrevendo na porta o valor
+  342:	  0202	F8			MOV regTable, A
+  343:	  0203	86 90			MOV printPort, @regTable
+  344:
+  345:	  0205	22			RET
+  346:
+  347:	  0206			write2Displays:
+  348:					;Salvando o número a ser impresso
+  349:	  0206	EA			MOV A, nPrint
+  350:	  0207	FF			MOV R7,A
+  351:
+  352:					;Indo para a rotina de printar dezena, caso o displayX nao esteja setado
+  353:	  0208	30 A7 17		JNB displayX, printDezena
+  354:
+  355:					;Fazendo rotina para pegar unidade
+  356:	  020B	EF			MOV A,R7
+  357:
+  358:					;Pegando a parte inteira da divisão por 10, as dezenas
+  359:	  020C	75 F0 0A		MOV B,#10
+  360:	  020F	84			DIV AB
+  361:
+  362:	  0210	75 F0 0A		MOV B,#10
+  363:					;Pegando as unidades
+  364:	  0213	A4			MUL AB
+  365:	  0214	F5 F0			MOV B,A
+  366:	  0216	EF			MOV A,R7
+  367:	  0217	AE F0			MOV R6,B
+  368:	  0219	9E			SUBB A, R6
+  369:
+  370:					;Printando as unidades
+  371:	  021A	C2 A7			CLR displayX
+  372:	  021C	FA			MOV nPrint,A
+  373:	  021D	31 FE			CALL writeNumber
+  374:
+  375:	  021F	EF			MOV A,R7
+  376:	  0220	FA			MOV nPrint, A
+  377:
+  378:	  0221	32			RETI
+  379:
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 8
+
+
+
+ Line  I  Addr  Code            Source
+
+  380:	  0222			printDezena:
+  381:	  0222	EF			MOV A,R7
+  382:					;Pegando a parte inteira da divisão por 10, as dezenas
+  383:	  0223	75 F0 0A		MOV B,#10
+  384:	  0226	84			DIV AB
+  385:
+  386:					;Printando no display da dezena
+  387:	  0227	D2 A7			SETB displayX
+  388:	  0229	FA			MOV nPrint,A
+  389:	  022A	31 FE			CALL writeNumber
+  390:
+  391:	  022C	EF			MOV A,R7
+  392:	  022D	FA			MOV nPrint, A
+  393:	  022E	32			RETI
+  394:
+  395:	  022F			checkSpeed:
+  396:					;Supondo que tenha o tempo em R4 e a Distancia em R5
+  397:	  022F	8C F0			MOV B, R4
+  398:	  0231	ED			MOV A, R5
+  399:
+  400:					;Pegando a Velocidade por hr
+  401:	  0232	84			DIV AB
+  402:	  0233	FA			MOV nPrint,A
+  403:
+  404:					;Checando se passou de 40
+  405:	  0234	C3			CLR C
+  406:	  0235	94 28			SUBB A,#40
+  407:
+  408:					;Decide se liga led/buzzer ou só escreve nos displays
+  409:	  0237	40 02			JC writingSpeed
+  410:	  0239	C2 80			CLR P0.0
+  411:
+  412:	  023B			writingSpeed:
+  413:					;Escrevendo
+  414:	  023B	31 BF			CALL loadNumbers
+  415:	  023D	31 B3			CALL configTimersToDisplay
+  416:	  023F	22			RET
+  417:
+  418:	  0240			timer0Rotina:
+  419:	  0240	DB 04			DJNZ R3, t0r
+  420:	  0242	D2 80			SETB P0.0
+  421:	  0244	C2 8C			CLR TR0
+  422:	  0246			t0r:
+  423:	  0246	41 06			AJMP write2Displays
+  424:	  0248	22			RET
+  425:
+  426:
+  427:
+  428:				;====================================================================
+  429:				      END
+
+
+
+
+
+                     register banks used:  ---
+
+ASEM-51 V1.3                                         Copyright (c) 2002 by W.W. Heinz                                         PAGE 9
+
+
+
+
+                     no errors
+
+
+
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 10
+
+
+
+
+
+	       L I S T   O F   S Y M B O L S
+	       =============================
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+??ASEM_51			  NUMBER    8051
+??VERSION			  NUMBER    0130
+AC				  BIT	      D6
+ACC				  DATA	      E0
+ARRUMA_TIMER			  CODE	    0115	  71
+B				  DATA	      F0
+CARREGA_TEMPOS			  CODE	    0143	 109
+CARREGA_TEMPOS2			  CODE	    0197	 185
+CHECKSPEED			  CODE	    022F	 395
+COMPARA_VALORES			  CODE	    014C	 119
+COMPARA_VALORES2		  CODE	    019E	 194
+CONFIGTIMERSTODISPLAY		  CODE	    01B3	 227
+CY				  BIT	      D7
+DELAY				  CODE	    0164	 144
+DISPLAYX			  NUMBER    00A7	   8
+DPH				  DATA	      83
+DPL				  DATA	      82
+EA				  BIT	      AF
+ES				  BIT	      AC
+ET0				  BIT	      A9
+ET1				  BIT	      AB
+EX0				  BIT	      A8
+EX1				  BIT	      AA
+EXTERNA0			  CODE	    0119	  78
+EXTERNA1			  CODE	    016D	 154
+EXTI0				  CODE	    0003
+EXTI1				  CODE	    0013
+F0				  BIT	      D5
+FINALIZACONTAGEM		  CODE	    0128	  86
+FINALIZACONTAGEM2		  CODE	    017A	 161
+IE				  DATA	      A8
+IE0				  BIT	      89
+IE1				  BIT	      8B
+INICIA_CONTAGEM_FREQUENCIA	  CODE	    012C	  91
+INICIA_CONTAGEM_FREQUENCIA2	  CODE	    017E	 166
+INT0				  BIT	      B2
+INT1				  BIT	      B3
+IP				  DATA	      B8
+IT0				  BIT	      88
+IT1				  BIT	      8A
+LOADNUMBERS			  CODE	    01BF	 249
+LOOP				  CODE	    0166	 146
+MEMTABLE			  NUMBER    00C8	   7
+MUDOU_FREQUECIA			  CODE	    0156	 133
+MUDOU_FREQUECIA2		  CODE	    01A8	 208
+NPRINT				  REGISTER    R2	   6
+OV				  BIT	      D2
+P				  BIT	      D0
+P0				  DATA	      80
+P1				  DATA	      90
+
+ASEM-51 V1.3                                        Copyright (c) 2002 by W.W. Heinz                                         PAGE 11
+
+
+
+SYMBOL				  TYPE     VALUE	LINE
+------------------------------------------------------------
+P2				  DATA	      A0
+P3				  DATA	      B0
+PARA_CONTAGEM_FREQUENCIA	  CODE	    0135	  99
+PARA_CONTAGEM_FREQUENCIA2	  CODE	    0189	 175
+PCON				  DATA	      87
+PRINTDEZENA			  CODE	    0222	 380
+PRINTPORT			  NUMBER    0090	   4
+PS				  BIT	      BC
+PSW				  DATA	      D0
+PT0				  BIT	      B9
+PT1				  BIT	      BB
+PX0				  BIT	      B8
+PX1				  BIT	      BA
+RB8				  BIT	      9A
+RD				  BIT	      B7
+REGTABLE			  REGISTER    R0	   5
+REN				  BIT	      9C
+RESET				  CODE	    0000
+RESET_INICIAL			  CODE	    0105	  55
+RI				  BIT	      98
+ROTINA				  CODE	    01B0	 223
+RS0				  BIT	      D3
+RS1				  BIT	      D4
+RXD				  BIT	      B0
+SBUF				  DATA	      99
+SCON				  DATA	      98
+SINT				  CODE	    0023
+SM0				  BIT	      9F
+SM1				  BIT	      9E
+SM2				  BIT	      9D
+SP				  DATA	      81
+START				  CODE	    0100	  45
+T0				  BIT	      B4
+T0R				  CODE	    0246	 422
+T1				  BIT	      B5
+TB8				  BIT	      9B
+TCON				  DATA	      88
+TF0				  BIT	      8D
+TF1				  BIT	      8F
+TH0				  DATA	      8C
+TH1				  DATA	      8D
+TI				  BIT	      99
+TIMER0				  CODE	    000B
+TIMER0ROTINA			  CODE	    0240	 418
+TIMER1				  CODE	    001B
+TL0				  DATA	      8A
+TL1				  DATA	      8B
+TMOD				  DATA	      89
+TR0				  BIT	      8C
+TR1				  BIT	      8E
+TXD				  BIT	      B1
+WR				  BIT	      B6
+WRITE2DISPLAYS			  CODE	    0206	 347
+WRITENUMBER			  CODE	    01FE	 333
+WRITINGSPEED			  CODE	    023B	 412

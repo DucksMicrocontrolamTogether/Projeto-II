@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<WORKSPACE>
+ <FRAME activewindow="2">
+  <PLACEMENT>2c0000000200000003000000ffffffffffffffffffffffffffffffff8300000009000000d3040000cf020000</PLACEMENT>
+  <WINDOW type="default" module="ISIS"/>
+  <WINDOW type="default" module="ARES"/>
+  <WINDOW type="default" module="VSMSTUDIO">
+   <FILE NAME="C:/Users/Nikito/Desktop/Lombada_Eletronica/AT89C51/main.asm"/>
+   <STATE NAME="EDIT" VALUE="AAAA/wAAAAH9AAAAAgAAAAAAAADIAAAB9PwCAAAAAfsAAAAQAFAAcgBvAGoAZQBjAHQAcwEAAAAAAAAB9AAAASwA////AAAAAwAABU4AAABd/AEAAAAB+wAAACAATwB1AHQAcAB1AHQARABvAGMAawBXAGkAZABnAGUAdAEAAAAAAAAFTgAAAEcA////AAAEggAAAfQAAAAEAAAABAAAAAgAAAAI/AAAAAA="/>
+   <STATE NAME="DEBUG" VALUE="AAAA/wAAAAH9AAAAAgAAAAAAAAEAAAAB7fwCAAAAAfsAAAAQAFAAcgBvAGoAZQBjAHQAcwAAAAAAAAAB7QAAASwA////AAAAAwAABU4AAAD5/AEAAAAB/AAAAAAAAAVOAAAARwD////6AAAAAAEAAAAG+wAAACAATwB1AHQAcAB1AHQARABvAGMAawBXAGkAZABnAGUAdAEAAAAA/////wAAAEcA////+wAAACoAZABvAGMAawA6ADAAOgBTAGkAbQB1AGwAYQB0AGkAbwBuACAATABvAGcBAAAAAP////8AAAAAAAAAAPsAAAAmAGQAbwBjAGsAOgAxADoAVwBhAHQAYwBoACAAVwBpAG4AZABvAHcBAAAAAP////8AAAAAAAAAAPsAAAA8AGQAbwBjAGsAOgAxADoAOAAwADUAMQAgAEMAUABVACAAUgBlAGcAaQBzAHQAZQByAHMAIAAtACAAVQAxAAAAAAD/////AAAAAAAAAAD7AAAAWABkAG8AYwBrADoAMwA6ADgAMAA1ADEAIABDAFAAVQAgAEkAbgB0AGUAcgBuAGEAbAAgACgASQBEAEEAVABBACkAIABNAGUAbQBvAHIAeQAgAC0AIABVADEAAAAAAP////8AAAAAAAAAAPsAAAA+AGQAbwBjAGsAOgAyADoAOAAwADUAMQAgAEMAUABVACAAUwBGAFIAIABNAGUAbQBvAHIAeQAgAC0AIABVADEAAAAAAP////8AAAAAAAAAAAAABU4AAAFYAAAABAAAAAQAAAAIAAAACPwAAAAA"/>
+  </WINDOW>
+ </FRAME>
+ <MODULE name="VSMDEBUG">
+  <PWI>
+   <POPUP w="400" x="-896" flags="00000003" y="-497" h="100" pid="0" iid="-1">
+    <PROPERTIES>
+     <ITEM name="Message Column Width">160</ITEM>
+     <ITEM name="ShowGrid">No</ITEM>
+     <ITEM name="Source Column Width">100</ITEM>
+     <ITEM name="Time Column Width">120</ITEM>
+     <ITEM name="Version">100</ITEM>
+    </PROPERTIES>
+   </POPUP>
+   <POPUP w="1358" x="4" flags="00000033" y="494" h="206" pid="1" iid="-1">
+    <PROPERTIES>
+     <ITEM name="Address Column Width">87</ITEM>
+     <ITEM name="AutoResize">No</ITEM>
+     <ITEM name="Gridlines">Yes</ITEM>
+     <ITEM name="Item 0">"P0","0x0080",00000001,00000002,0,1,2,00000002,0,00000000,00000000</ITEM>
+     <ITEM name="Item 1">"P1","0x0090",00000001,00000002,16,1,2,00000002,0,00000000,00000000</ITEM>
+     <ITEM name="Item 2">"P2","0x00A0",00000001,00000002,32,1,2,00000002,0,00000000,00000000</ITEM>
+     <ITEM name="Item 3">"P3","0x00B0",00000001,00000002,48,1,2,00000002,0,00000000,00000000</ITEM>
+     <ITEM name="Item 4">"TL1","0x008B",00000001,00000002,11,1,3,00000002,0,00000000,00000000</ITEM>
+     <ITEM name="Item 5">"TH1","0x008D",00000001,00000002,13,1,3,00000002,0,00000000,00000000</ITEM>
+     <ITEM name="Item 6">"P2","0x00A0",00000001,00000002,32,1,0,00000002,0,00000000,00000000</ITEM>
+     <ITEM name="Name Column Width">87</ITEM>
+     <ITEM name="ShowAddresses">Yes</ITEM>
+     <ITEM name="ShowPreviousValues">No</ITEM>
+     <ITEM name="ShowTypes">No</ITEM>
+     <ITEM name="ShowWatchPoint">Yes</ITEM>
+     <ITEM name="TriggerMode">0</ITEM>
+     <ITEM name="Value Column Width">125</ITEM>
+     <ITEM name="Version">100</ITEM>
+     <ITEM name="Watch Expression Column Width">87</ITEM>
+     <ITEM name="nItems">6</ITEM>
+    </PROPERTIES>
+   </POPUP>
+   <POPUP w="1352" x="6" flags="0000802b" y="125" h="318" pid="1000" iid="1">
+    <PROPERTIES>
+     <ITEM name="Breakpoint 0">"externa1",016D,0000,51EB,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 1">"externa0",011B,0002,912A,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 10">"inicia_contagem_frequencia",012C,0000,C9BC,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 11">"inicia_contagem_frequencia",012C,0000,C122,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 12">"inicia_contagem_frequencia",012F,0003,01D3,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 13">"inicia_contagem_frequencia",0132,0006,86E1,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 14">"inicia_contagem_frequencia",0134,0008,680F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 15">"para_contagem_frequencia",0135,0000,41F3,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 16">"para_contagem_frequencia",0135,0000,347C,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 17">"para_contagem_frequencia",0137,0002,4208,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 18">"para_contagem_frequencia",0139,0004,4F1F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 19">"para_contagem_frequencia",013A,0005,820A,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 2">"externa0",011D,0004,05A3,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 20">"para_contagem_frequencia",013C,0007,8EAE,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 21">"para_contagem_frequencia",013D,0008,A03A,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 22">"para_contagem_frequencia",0140,000B,17CA,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 23">"carrega_tempos",0143,0000,C0E1,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 24">"carrega_tempos",0143,0000,888B,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 25">"carrega_tempos",0144,0001,4EFF,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 26">"carrega_tempos",0145,0002,4ACA,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 27">"carrega_tempos",0146,0003,4E0F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 28">"carrega_tempos",0147,0004,8E08,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 29">"carrega_tempos",0149,0006,63D0,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 3">"externa0",011F,0006,CC9C,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 30">"carrega_tempos",014B,0008,680F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 31">"compara_valores",014C,0000,3323,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 32">"compara_valores",014C,0000,8B4B,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 33">"compara_valores",014D,0001,CC7D,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 34">"compara_valores",014E,0002,B143,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 35">"compara_valores",014F,0003,9F99,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 36">"compara_valores",0151,0005,3F23,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 37">"compara_valores",0153,0007,63D0,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 38">"compara_valores",0155,0009,680F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 39">"mudou_frequecia",0156,0000,52CD,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 4">"externa0",0122,0009,85C8,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 40">"mudou_frequecia",0156,0000,4620,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 41">"mudou_frequecia",0158,0002,A311,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 42">"mudou_frequecia",015A,0004,390F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 43">"mudou_frequecia",015C,0006,7027,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 5">"externa0",0125,000C,63D0,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 6">"externa0",0127,000E,680F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 7">"FinalizaContagem",0128,0000,1D9F,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 8">"FinalizaContagem",0128,0000,77AF,2180,1
+</ITEM>
+     <ITEM name="Breakpoint 9">"FinalizaContagem",012B,0003,680F,2180,1
+</ITEM>
+     <ITEM name="CaseSensitive">No</ITEM>
+     <ITEM name="DISPADDRS">Yes</ITEM>
+     <ITEM name="DISPLNUMS">No</ITEM>
+     <ITEM name="DISPOPCODES">No</ITEM>
+     <ITEM name="FIXUPBPTS">Yes</ITEM>
+     <ITEM name="WordsOnly">No</ITEM>
+     <ITEM name="nBreakpoints">0</ITEM>
+    </PROPERTIES>
+   </POPUP>
+   <POPUP w="24" x="4" flags="00000048" y="103" h="17" pid="1" iid="1">
+    <PROPERTIES/>
+   </POPUP>
+   <POPUP w="1" x="4" flags="0000000a" y="103" h="1" pid="3" iid="1">
+    <PROPERTIES>
+     <ITEM name="DataType">2</ITEM>
+     <ITEM name="DispChars">Yes</ITEM>
+     <ITEM name="DispFormat">2</ITEM>
+     <ITEM name="ShowChanges">Yes</ITEM>
+     <ITEM name="ShowToolTips">Yes</ITEM>
+     <ITEM name="TopLineAddress">00000000</ITEM>
+    </PROPERTIES>
+   </POPUP>
+   <POPUP w="1" x="4" flags="0000000a" y="103" h="1" pid="2" iid="1">
+    <PROPERTIES>
+     <ITEM name="DataType">2</ITEM>
+     <ITEM name="DispChars">Yes</ITEM>
+     <ITEM name="DispFormat">2</ITEM>
+     <ITEM name="ShowChanges">Yes</ITEM>
+     <ITEM name="ShowToolTips">Yes</ITEM>
+     <ITEM name="TopLineAddress">00000080</ITEM>
+    </PROPERTIES>
+   </POPUP>
+  </PWI>
+ </MODULE>
+</WORKSPACE>
