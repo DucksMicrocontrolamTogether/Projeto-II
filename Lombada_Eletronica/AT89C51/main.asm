@@ -6,6 +6,7 @@ regTable equ R0
 nPrint equ R2
 memTable equ 200
 displayX equ P2.7
+displayY equ P2.6
 ;====================================================================
 ; VARIABLES
 ;====================================================================
@@ -26,8 +27,9 @@ displayX equ P2.7
 	; Timer0
 	org 000Bh
 	CPL P1.0
-	;CALL timer0Rotina
+	CALL timer0Rotina
 	RETI
+	
 	;externa 1
 	org 0013h
 	CALL externa1
@@ -44,13 +46,14 @@ displayX equ P2.7
     ORG   0100h
 Start:
 	;MainBemFeita
+	;Coloca a distancia em R5 e o tempo em R4
+	MOV R4,#1
+	MOV R5,#38
+	CALL checkSpeed
+	JMP $
+	
 	CALL Reset_inicial
 	JMP $
-	;Coloca a distancia em R5 e o tempo em R4
-	;MOV R4,#1
-	;MOV R5,#39
-	;CALL checkSpeed
-	;JMP $
 
 Reset_inicial:	
 	;P0.1 indica que esta na fase da captura de dados
@@ -214,11 +217,6 @@ mudou_frequecia2:
 	;Implementar o que precisa fazer para chamar as funções do display
 	RET
 	
-
-
-
-
-	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 ROTINA:
@@ -242,8 +240,8 @@ configTimersToDisplay:
 	;SETB TR1
 	
 	;Configuração da quantidade de tempo
-	;MOV TH0, 255
-	;MOV TL0, 0
+	MOV TH0, 255
+	MOV TL0, 0
 	
 	RET
 	
@@ -351,7 +349,7 @@ write2Displays:
 	MOV R7,A
 	
 	;Indo para a rotina de printar dezena, caso o displayX nao esteja setado
-	JNB displayX, printDezena 
+	JB displayX, printDezena 
 	
 	;Fazendo rotina para pegar unidade
 	MOV A,R7
@@ -369,7 +367,8 @@ write2Displays:
 	SUBB A, R6
 	
 	;Printando as unidades
-	CLR displayX
+	SETB displayX
+	CLR displayY
 	MOV nPrint,A
 	CALL writeNumber
 	
@@ -385,7 +384,8 @@ printDezena:
 	DIV AB
 	
 	;Printando no display da dezena
-	SETB displayX
+	CLR displayX
+	SETB displayY
 	MOV nPrint,A
 	CALL writeNumber
 	
@@ -418,13 +418,15 @@ writingSpeed:
 	
 timer0Rotina:
 	DJNZ R3, t0r
+	;Desligando display, buzzer e led
 	SETB P0.0
+	CLR displayX
+	CLR displayY
 	CLR TR0
+	RET
 t0r:
 	AJMP write2Displays
 	RET
-
-
-
+	
 ;====================================================================
       END

@@ -6,6 +6,7 @@
 ,,,nPrint equ R2
 ,,,memTable equ 200
 000B,,,displayX equ P2.7
+000B,,,displayY equ P2.6
 ,,,;====================================================================
 ,,,; VARIABLES
 ,,,;====================================================================
@@ -20,17 +21,18 @@
 ,,,
 ,,,        ;Externa 0
 ,,,        org 0003h
-0003,12 01 19,,        CALL externa0
+0003,12 01 24,,        CALL externa0
 0006,32,,        RETI
 ,,,
 ,,,        ; Timer0
 ,,,        org 000Bh
 000B,B2 90,,        CPL P1.0
-,,,        ;CALL timer0Rotina
-000D,32,,        RETI
+000D,12 02 50,,        CALL timer0Rotina
+0010,32,,        RETI
+,,,
 ,,,        ;externa 1
 ,,,        org 0013h
-0013,12 01 6D,,        CALL externa1
+0013,12 01 78,,        CALL externa1
 0016,32,,        RETI
 ,,,
 ,,,
@@ -44,386 +46,387 @@
 ,,,    ORG   0100h
 0100,,Start,Start:
 ,,,        ;MainBemFeita
-0100,12 01 05,,        CALL Reset_inicial
-0103,80 FE,,        JMP $
 ,,,        ;Coloca a distancia em R5 e o tempo em R4
-,,,        ;MOV R4,#1
-,,,        ;MOV R5,#39
-,,,        ;CALL checkSpeed
-,,,        ;JMP $
+0100,7C 01,,        MOV R4,#1
+0102,7D 26,,        MOV R5,#38
+0104,12 02 3F,,        CALL checkSpeed
+0107,80 FE,,        JMP $
 ,,,
-0105,,Reset_inicial,Reset_inicial:
+0109,12 01 0E,,        CALL Reset_inicial
+010C,80 FE,,        JMP $
+,,,
+010E,,Reset_inicial,Reset_inicial:
 ,,,        ;P0.1 indica que esta na fase da captura de dados
-0105,D2 81,,        SETB P0.1
+010E,D2 81,,        SETB P0.1
 ,,,        ;Habilitando as interupções
-0107,D2 AF,,        SETB EA
+0110,D2 AF,,        SETB EA
 ,,,        ;Habilitando a interupção externa 0
-0109,D2 A8,,        SETB EX0
+0112,D2 A8,,        SETB EX0
 ,,,        ;Transformando em interupção por borda
-010B,D2 88,,        SETB IT0
-010D,12 01 15,,        CALL Arruma_Timer
-0110,7D 00,,        MOV R5,#0
-0112,7E 00,,        MOV R6,#0
-0114,22,,        RET
+0114,D2 88,,        SETB IT0
+0116,D2 8A,,        SETB IT1
+,,,
+0118,12 01 20,,        CALL Arruma_Timer
+011B,7D 00,,        MOV R5,#0
+011D,7E 00,,        MOV R6,#0
+011F,22,,        RET
 ,,,
 ,,,
 ,,,
-0115,,Arruma_Timer,Arruma_Timer:
+0120,,Arruma_Timer,Arruma_Timer:
 ,,,        ; Timer 0 e Timer 1, modo 1 (contador de 16 bits)
-0115,75 89 11,,        MOV TMOD, #00010001b
+0120,75 89 11,,        MOV TMOD, #00010001b
 ,,,        ;Liga interrupções, e liga interrupção de timer0
 ,,,        ;SETB ET0
-0118,22,,        RET
+0123,22,,        RET
 ,,,
-0119,,externa0,externa0:
-0119,C2 AA,,        CLR EX1
-011B,C2 A8,,        CLR EX0
-011D,B2 A3,,        CPL P2.3
-011F,30 A3 06,,        JNB P2.3,FinalizaContagem ;if(P2.3 != 0) FinalizaContagem
-0122,12 01 2C,,        CALL inicia_contagem_frequencia ;inicia contagem
-0125,D2 A8,,        SETB EX0
-0127,22,,        RET
-0128,,FinalizaContagem,FinalizaContagem:
-0128,12 01 35,,        CALL para_contagem_frequencia
+0124,,externa0,externa0:
+0124,C2 AA,,        CLR EX1
+0126,C2 A8,,        CLR EX0
+0128,B2 A3,,        CPL P2.3
+012A,30 A3 06,,        JNB P2.3,FinalizaContagem ;if(P2.3 != 0) FinalizaContagem
+012D,12 01 37,,        CALL inicia_contagem_frequencia ;inicia contagem
+0130,D2 A8,,        SETB EX0
+0132,22,,        RET
+0133,,FinalizaContagem,FinalizaContagem:
+0133,12 01 40,,        CALL para_contagem_frequencia
 ,,,        ;SETB EX0
-012B,22,,        RET
+0136,22,,        RET
 ,,,
-012C,,inicia_contagem_frequencia,inicia_contagem_frequencia:
-012C,75 8C 00,,        MOV TH0,#0
-012F,75 8A 00,,        MOV TL0,#0
+0137,,inicia_contagem_frequencia,inicia_contagem_frequencia:
+0137,75 8C 00,,        MOV TH0,#0
+013A,75 8A 00,,        MOV TL0,#0
 ,,,
 ,,,        ;Inicializa o timer0
-0132,D2 8C,,    SETB TR0
-0134,22,,        RET
+013D,D2 8C,,    SETB TR0
+013F,22,,        RET
 ,,,
-0135,,para_contagem_frequencia,para_contagem_frequencia:
-0135,C2 8C,,        CLR TR0
+0140,,para_contagem_frequencia,para_contagem_frequencia:
+0140,C2 8C,,        CLR TR0
 ,,,        ;Salvando o valor contado
-0137,E5 8A,,        MOV A,TL0
-0139,FB,,        MOV R3,A
-013A,E5 8C,,        MOV A,TH0
-013C,FC,,        MOV R4,A
+0142,E5 8A,,        MOV A,TL0
+0144,FB,,        MOV R3,A
+0145,E5 8C,,        MOV A,TH0
+0147,FC,,        MOV R4,A
 ,,,
-013D,BD 00 0C,,        CJNE R5,#0,compara_valores ; if(R5 != 0) vai para compara_valores
-0140,BE 00 09,,        CJNE R6,#0,compara_valores ; if(R6 != 0) vai para compara_valores
-0143,,carrega_tempos,carrega_tempos:
-0143,EB,,        MOV A,R3
-0144,FD,,        MOV R5,A
-0145,EC,,        MOV A,R4
-0146,FE,,        MOV R6,A
-0147,31 2C,,        CALL inicia_contagem_frequencia
-0149,D2 A8,,        SETB EX0
-014B,22,,        RET
+0148,BD 00 0C,,        CJNE R5,#0,compara_valores ; if(R5 != 0) vai para compara_valores
+014B,BE 00 09,,        CJNE R6,#0,compara_valores ; if(R6 != 0) vai para compara_valores
+014E,,carrega_tempos,carrega_tempos:
+014E,EB,,        MOV A,R3
+014F,FD,,        MOV R5,A
+0150,EC,,        MOV A,R4
+0151,FE,,        MOV R6,A
+0152,31 37,,        CALL inicia_contagem_frequencia
+0154,D2 A8,,        SETB EX0
+0156,22,,        RET
 ,,,
 ,,,        ;Compara os valores
-014C,,compara_valores,compara_valores:
+0157,,compara_valores,compara_valores:
 ,,,        ;Tempo L novo
-014C,EE,,        MOV A,R6
+0157,EE,,        MOV A,R6
 ,,,        ;Tempo L antigo
-014D,9C,,        SUBB A,R4
+0158,9C,,        SUBB A,R4
 ,,,
 ,,,        ;Nosso threshold eh de 1 unidades de timer
 ,,,        ;A esta segurando a diferença entre TL
-014E,C3,,        CLR C
-014F,94 01,,        SUBB A,#1
+0159,C3,,        CLR C
+015A,94 01,,        SUBB A,#1
 ,,,
-0151,50 03,,        JNC mudou_frequecia
-0153,D2 A8,,        SETB EX0
-0155,22,,        RET
-0156,,mudou_frequecia,mudou_frequecia:
+015C,50 03,,        JNC mudou_frequecia
+015E,D2 A8,,        SETB EX0
+0160,22,,        RET
+0161,,mudou_frequecia,mudou_frequecia:
 ,,,        ;Inicializa o timer1
-0156,D2 8E,,    SETB TR1
+0161,D2 8E,,    SETB TR1
 ,,,        ;liga a interrupcao 1
-0158,D2 AA,,        SETB EX1
-015A,D2 A3,,        SETB P2.3
-015C,7E 00,,        MOV R6,#0
-015E,7D 00,,        MOV R5,#0
-0160,75 90 AA,,        MOV P1, #10101010B
-0163,22,,        RET
+0163,D2 AA,,        SETB EX1
+0165,D2 A3,,        SETB P2.3
+0167,7E 00,,        MOV R6,#0
+0169,7D 00,,        MOV R5,#0
+016B,75 90 AA,,        MOV P1, #10101010B
+016E,22,,        RET
 ,,,
-0164,,Delay,Delay:  ;Um segundo de delay
-0164,7F C8,,                                        MOV R7,#200
-0166,7E 01,LOOP,LOOP:                           MOV R6,#1
-0168,DD FE,,                                        DJNZ R5,$
-016A,DF FA,,                                        DJNZ R7,LOOP
-016C,22,,                                        RET
+016F,,Delay,Delay:  ;Um segundo de delay
+016F,7F C8,,                                        MOV R7,#200
+0171,7E 01,LOOP,LOOP:                           MOV R6,#1
+0173,DD FE,,                                        DJNZ R5,$
+0175,DF FA,,                                        DJNZ R7,LOOP
+0177,22,,                                        RET
 ,,,;;;;;;;;;;;;;;;;;;;;;;;;;;;ESPELHO P/ EX1 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ,,,
 ,,,
 ,,,
-016D,,externa1,externa1:
-016D,C2 AA,,        CLR EX1
-016F,B2 A3,,        CPL P2.3; OLHAR
-0171,30 A3 06,,        JNB P2.3,FinalizaContagem2 ;if(P2.3 != 0) FinalizaContagem
-0174,12 01 7E,,        CALL inicia_contagem_frequencia2 ;inicia contagem
-0177,D2 AA,,        SETB EX1
-0179,22,,        RET
-017A,,FinalizaContagem2,FinalizaContagem2:
-017A,12 01 89,,        CALL para_contagem_frequencia2
+0178,,externa1,externa1:
+0178,C2 AA,,        CLR EX1
+017A,B2 A3,,        CPL P2.3; OLHAR
+017C,30 A3 06,,        JNB P2.3,FinalizaContagem2 ;if(P2.3 != 0) FinalizaContagem
+017F,12 01 89,,        CALL inicia_contagem_frequencia2 ;inicia contagem
+0182,D2 AA,,        SETB EX1
+0184,22,,        RET
+0185,,FinalizaContagem2,FinalizaContagem2:
+0185,12 01 94,,        CALL para_contagem_frequencia2
 ,,,        ;SETB EX1
-017D,22,,        RET
-,,,
-017E,,inicia_contagem_frequencia2,inicia_contagem_frequencia2:
-017E,75 8C 00,,        MOV TH0,#0
-0181,75 8A 00,,        MOV TL0,#0
-,,,
-,,,        ;Inicializa o timer0
-0184,D2 8C,,    SETB TR0
-0186,D2 AA,,        SETB EX1
 0188,22,,        RET
 ,,,
-0189,,para_contagem_frequencia2,para_contagem_frequencia2:
-0189,C2 8C,,        CLR TR0
-,,,        ;Salvando o valor contado
-018B,E5 8A,,        MOV A,TL0
-018D,FB,,        MOV R3,A
-018E,E5 8C,,        MOV A,TH0
-0190,FC,,        MOV R4,A
+0189,,inicia_contagem_frequencia2,inicia_contagem_frequencia2:
+0189,75 8C 00,,        MOV TH0,#0
+018C,75 8A 00,,        MOV TL0,#0
 ,,,
-0191,BD 00 0A,,        CJNE R5,#0,compara_valores2; if(R5 != 0) vai para compara_valores
-0194,BE 00 07,,        CJNE R6,#0,compara_valores2 ; if(R6 != 0) vai para compara_valores
-0197,,carrega_tempos2,carrega_tempos2:
-0197,EB,,        MOV A,R3
-0198,FD,,        MOV R5,A
-0199,EC,,        MOV A,R4
-019A,FE,,        MOV R6,A
-019B,31 7E,,        CALL inicia_contagem_frequencia2
-019D,22,,        RET
+,,,        ;Inicializa o timer0
+018F,D2 8C,,    SETB TR0
+0191,D2 AA,,        SETB EX1
+0193,22,,        RET
+,,,
+0194,,para_contagem_frequencia2,para_contagem_frequencia2:
+0194,C2 8C,,        CLR TR0
+,,,        ;Salvando o valor contado
+0196,E5 8A,,        MOV A,TL0
+0198,FB,,        MOV R3,A
+0199,E5 8C,,        MOV A,TH0
+019B,FC,,        MOV R4,A
+,,,
+019C,BD 00 0A,,        CJNE R5,#0,compara_valores2; if(R5 != 0) vai para compara_valores
+019F,BE 00 07,,        CJNE R6,#0,compara_valores2 ; if(R6 != 0) vai para compara_valores
+01A2,,carrega_tempos2,carrega_tempos2:
+01A2,EB,,        MOV A,R3
+01A3,FD,,        MOV R5,A
+01A4,EC,,        MOV A,R4
+01A5,FE,,        MOV R6,A
+01A6,31 89,,        CALL inicia_contagem_frequencia2
+01A8,22,,        RET
 ,,,
 ,,,        ;Compara os valores
-019E,,compara_valores2,compara_valores2:
+01A9,,compara_valores2,compara_valores2:
 ,,,        ;Tempo L novo
-019E,EE,,        MOV A,R6
+01A9,EE,,        MOV A,R6
 ,,,        ;Tempo L antigo
-019F,9C,,        SUBB A,R4
+01AA,9C,,        SUBB A,R4
 ,,,
 ,,,        ;Nosso threshold eh de 1 unidades de timer
 ,,,        ;A esta segurando a diferença entre TL
-01A0,C3,,        CLR C
-01A1,94 01,,        SUBB A,#1
+01AB,C3,,        CLR C
+01AC,94 01,,        SUBB A,#1
 ,,,
-01A3,50 03,,        JNC mudou_frequecia2
-01A5,D2 AA,,        SETB EX1
-01A7,22,,        RET
-01A8,,mudou_frequecia2,mudou_frequecia2:
+01AE,50 03,,        JNC mudou_frequecia2
+01B0,D2 AA,,        SETB EX1
+01B2,22,,        RET
+01B3,,mudou_frequecia2,mudou_frequecia2:
 ,,,        ;Finaliza o timer1
-01A8,C2 8E,,    CLR TR1
-,,,        ;
-01AA,E5 8D,,        MOV A,TH1
-01AC,75 A0 00,,        MOV P2,#0
-01AF,22,,        RET
+01B3,C2 8E,,    CLR TR1
 ,,,
-,,,
-,,,
-,,,
-,,,
+,,,        ;Implementar o que precisa fazer para chamar as funções do display
+01B5,22,,        RET
 ,,,
 ,,,;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ,,,
-01B0,,ROTINA,ROTINA:
-01B0,B2 A5,,       CPL P2.5 ; complementa estado do bit 0 do PORT 1
-01B2,32,,       RETI ; retorno da rotina interrupção
+01B6,,ROTINA,ROTINA:
+01B6,B2 A5,,       CPL P2.5 ; complementa estado do bit 0 do PORT 1
+01B8,32,,       RETI ; retorno da rotina interrupção
 ,,,
-01B3,,configTimersToDisplay,configTimersToDisplay:
+01B9,,configTimersToDisplay,configTimersToDisplay:
 ,,,        ;Configurando tempo do timer0
-01B3,7B 1E,,        MOV R3,#30
+01B9,7B 1E,,        MOV R3,#30
 ,,,
 ,,,        ; Timer 0 e Timer 1, modo 1 (contador de 16 bits)
-01B5,75 89 11,,        MOV TMOD, #00010001b
+01BB,75 89 11,,        MOV TMOD, #00010001b
 ,,,
 ,,,        ;Liga interrupções, e liga interrupção de timer0
-01B8,D2 AF,,        SETB EA
-01BA,D2 A9,,        SETB ET0
+01BE,D2 AF,,        SETB EA
+01C0,D2 A9,,        SETB ET0
 ,,,        ;SETB ET1
 ,,,
 ,,,        ;Inicializa o timer0
-01BC,D2 8C,,    SETB TR0
+01C2,D2 8C,,    SETB TR0
 ,,,        ;SETB TR1
 ,,,
 ,,,        ;Configuração da quantidade de tempo
-,,,        ;MOV TH0, 255
-,,,        ;MOV TL0, 0
+01C4,85 FF 8C,,        MOV TH0, 255
+01C7,85 00 8A,,        MOV TL0, 0
 ,,,
-01BE,22,,        RET
+01CA,22,,        RET
 ,,,
-01BF,,loadNumbers,loadNumbers:
-01BF,78 C8,,        MOV regTable,#memTable
+01CB,,loadNumbers,loadNumbers:
+01CB,78 C8,,        MOV regTable,#memTable
 ,,,        ;Caso seja o número 0
-01C1,76 C0,,        MOV @regTable,#11000000b
-,,,
-,,,        ;Passando para próximo endereço
-01C3,E8,,        MOV A, regTable
-01C4,24 01,,        ADD A,#1
-01C6,F8,,        MOV regTable, A
-,,,
-,,,        ;Caso seja o número 1
-01C7,76 79,,        MOV @regTable,#1111001b
-,,,
-,,,        ;Passando para próximo endereço
-01C9,E8,,        MOV A, regTable
-01CA,24 01,,        ADD A,#1
-01CC,F8,,        MOV regTable, A
-,,,
-,,,        ;Caso seja o número 2
-01CD,76 A4,,        MOV @regTable,#10100100b
+01CD,76 C0,,        MOV @regTable,#11000000b
 ,,,
 ,,,        ;Passando para próximo endereço
 01CF,E8,,        MOV A, regTable
 01D0,24 01,,        ADD A,#1
 01D2,F8,,        MOV regTable, A
 ,,,
-,,,        ;Caso seja o número 3
-01D3,76 B0,,        MOV @regTable,#10110000b
+,,,        ;Caso seja o número 1
+01D3,76 79,,        MOV @regTable,#1111001b
 ,,,
 ,,,        ;Passando para próximo endereço
 01D5,E8,,        MOV A, regTable
 01D6,24 01,,        ADD A,#1
 01D8,F8,,        MOV regTable, A
 ,,,
-,,,        ;Caso seja o número 4
-01D9,76 19,,        MOV @regTable,#00011001b
+,,,        ;Caso seja o número 2
+01D9,76 A4,,        MOV @regTable,#10100100b
 ,,,
 ,,,        ;Passando para próximo endereço
 01DB,E8,,        MOV A, regTable
 01DC,24 01,,        ADD A,#1
 01DE,F8,,        MOV regTable, A
 ,,,
-,,,        ;Caso seja o número 5
-01DF,76 12,,        MOV @regTable,#00010010b
+,,,        ;Caso seja o número 3
+01DF,76 B0,,        MOV @regTable,#10110000b
 ,,,
 ,,,        ;Passando para próximo endereço
 01E1,E8,,        MOV A, regTable
 01E2,24 01,,        ADD A,#1
 01E4,F8,,        MOV regTable, A
 ,,,
-,,,        ;Caso seja o número 6
-01E5,76 82,,        MOV @regTable,#10000010b
+,,,        ;Caso seja o número 4
+01E5,76 19,,        MOV @regTable,#00011001b
 ,,,
 ,,,        ;Passando para próximo endereço
 01E7,E8,,        MOV A, regTable
 01E8,24 01,,        ADD A,#1
 01EA,F8,,        MOV regTable, A
 ,,,
-,,,        ;Caso seja o número 7
-01EB,76 78,,        MOV @regTable,#1111000b
+,,,        ;Caso seja o número 5
+01EB,76 12,,        MOV @regTable,#00010010b
 ,,,
 ,,,        ;Passando para próximo endereço
 01ED,E8,,        MOV A, regTable
 01EE,24 01,,        ADD A,#1
 01F0,F8,,        MOV regTable, A
 ,,,
-,,,        ;Caso seja o número 8
-01F1,76 00,,        MOV @regTable,#00000000b
+,,,        ;Caso seja o número 6
+01F1,76 82,,        MOV @regTable,#10000010b
 ,,,
 ,,,        ;Passando para próximo endereço
 01F3,E8,,        MOV A, regTable
 01F4,24 01,,        ADD A,#1
 01F6,F8,,        MOV regTable, A
 ,,,
-,,,        ;Caso seja o número 9
-01F7,76 60,,        MOV @regTable,#01100000b
+,,,        ;Caso seja o número 7
+01F7,76 78,,        MOV @regTable,#1111000b
 ,,,
 ,,,        ;Passando para próximo endereço
 01F9,E8,,        MOV A, regTable
 01FA,24 01,,        ADD A,#1
 01FC,F8,,        MOV regTable, A
 ,,,
-01FD,22,,        RET
+,,,        ;Caso seja o número 8
+01FD,76 00,,        MOV @regTable,#00000000b
 ,,,
-01FE,,writeNumber,writeNumber:
+,,,        ;Passando para próximo endereço
+01FF,E8,,        MOV A, regTable
+0200,24 01,,        ADD A,#1
+0202,F8,,        MOV regTable, A
+,,,
+,,,        ;Caso seja o número 9
+0203,76 60,,        MOV @regTable,#01100000b
+,,,
+,,,        ;Passando para próximo endereço
+0205,E8,,        MOV A, regTable
+0206,24 01,,        ADD A,#1
+0208,F8,,        MOV regTable, A
+,,,
+0209,22,,        RET
+,,,
+020A,,writeNumber,writeNumber:
 ,,,        ;Colocando o ponteiro pra posição inicial dos números
-01FE,78 C8,,        MOV regTable,#memTable
+020A,78 C8,,        MOV regTable,#memTable
 ,,,
 ,,,        ;Colocando o ponteiro no número correto a ser escrito
-0200,EA,,        MOV A, nPrint
-0201,28,,        ADD A, regTable
+020C,EA,,        MOV A, nPrint
+020D,28,,        ADD A, regTable
 ,,,
 ,,,        ;Escrevendo na porta o valor
-0202,F8,,        MOV regTable, A
-0203,86 90,,        MOV printPort, @regTable
+020E,F8,,        MOV regTable, A
+020F,86 90,,        MOV printPort, @regTable
 ,,,
-0205,22,,        RET
+0211,22,,        RET
 ,,,
-0206,,write2Displays,write2Displays:
+0212,,write2Displays,write2Displays:
 ,,,        ;Salvando o número a ser impresso
-0206,EA,,        MOV A, nPrint
-0207,FF,,        MOV R7,A
+0212,EA,,        MOV A, nPrint
+0213,FF,,        MOV R7,A
 ,,,
 ,,,        ;Indo para a rotina de printar dezena, caso o displayX nao esteja setado
-0208,30 A7 17,,        JNB displayX, printDezena
+0214,20 A7 19,,        JB displayX, printDezena
 ,,,
 ,,,        ;Fazendo rotina para pegar unidade
-020B,EF,,        MOV A,R7
+0217,EF,,        MOV A,R7
 ,,,
 ,,,        ;Pegando a parte inteira da divisão por 10, as dezenas
-020C,75 F0 0A,,        MOV B,#10
-020F,84,,        DIV AB
+0218,75 F0 0A,,        MOV B,#10
+021B,84,,        DIV AB
 ,,,
-0210,75 F0 0A,,        MOV B,#10
+021C,75 F0 0A,,        MOV B,#10
 ,,,        ;Pegando as unidades
-0213,A4,,        MUL AB
-0214,F5 F0,,        MOV B,A
-0216,EF,,        MOV A,R7
-0217,AE F0,,        MOV R6,B
-0219,9E,,        SUBB A, R6
+021F,A4,,        MUL AB
+0220,F5 F0,,        MOV B,A
+0222,EF,,        MOV A,R7
+0223,AE F0,,        MOV R6,B
+0225,9E,,        SUBB A, R6
 ,,,
 ,,,        ;Printando as unidades
-021A,C2 A7,,        CLR displayX
-021C,FA,,        MOV nPrint,A
-021D,31 FE,,        CALL writeNumber
+0226,D2 A7,,        SETB displayX
+0228,C2 A6,,        CLR displayY
+022A,FA,,        MOV nPrint,A
+022B,51 0A,,        CALL writeNumber
 ,,,
-021F,EF,,        MOV A,R7
-0220,FA,,        MOV nPrint, A
+022D,EF,,        MOV A,R7
+022E,FA,,        MOV nPrint, A
 ,,,
-0221,32,,        RETI
+022F,32,,        RETI
 ,,,
-0222,,printDezena,printDezena:
-0222,EF,,        MOV A,R7
+0230,,printDezena,printDezena:
+0230,EF,,        MOV A,R7
 ,,,        ;Pegando a parte inteira da divisão por 10, as dezenas
-0223,75 F0 0A,,        MOV B,#10
-0226,84,,        DIV AB
+0231,75 F0 0A,,        MOV B,#10
+0234,84,,        DIV AB
 ,,,
 ,,,        ;Printando no display da dezena
-0227,D2 A7,,        SETB displayX
-0229,FA,,        MOV nPrint,A
-022A,31 FE,,        CALL writeNumber
+0235,C2 A7,,        CLR displayX
+0237,D2 A6,,        SETB displayY
+0239,FA,,        MOV nPrint,A
+023A,51 0A,,        CALL writeNumber
 ,,,
-022C,EF,,        MOV A,R7
-022D,FA,,        MOV nPrint, A
-022E,32,,        RETI
+023C,EF,,        MOV A,R7
+023D,FA,,        MOV nPrint, A
+023E,32,,        RETI
 ,,,
-022F,,checkSpeed,checkSpeed:
+023F,,checkSpeed,checkSpeed:
 ,,,        ;Supondo que tenha o tempo em R4 e a Distancia em R5
-022F,8C F0,,        MOV B, R4
-0231,ED,,        MOV A, R5
+023F,8C F0,,        MOV B, R4
+0241,ED,,        MOV A, R5
 ,,,
 ,,,        ;Pegando a Velocidade por hr
-0232,84,,        DIV AB
-0233,FA,,        MOV nPrint,A
+0242,84,,        DIV AB
+0243,FA,,        MOV nPrint,A
 ,,,
 ,,,        ;Checando se passou de 40
-0234,C3,,        CLR C
-0235,94 28,,        SUBB A,#40
+0244,C3,,        CLR C
+0245,94 28,,        SUBB A,#40
 ,,,
 ,,,        ;Decide se liga led/buzzer ou só escreve nos displays
-0237,40 02,,        JC writingSpeed
-0239,C2 80,,        CLR P0.0
+0247,40 02,,        JC writingSpeed
+0249,C2 80,,        CLR P0.0
 ,,,
-023B,,writingSpeed,writingSpeed:
+024B,,writingSpeed,writingSpeed:
 ,,,        ;Escrevendo
-023B,31 BF,,        CALL loadNumbers
-023D,31 B3,,        CALL configTimersToDisplay
-023F,22,,        RET
+024B,31 CB,,        CALL loadNumbers
+024D,31 B9,,        CALL configTimersToDisplay
+024F,22,,        RET
 ,,,
-0240,,timer0Rotina,timer0Rotina:
-0240,DB 04,,        DJNZ R3, t0r
-0242,D2 80,,        SETB P0.0
-0244,C2 8C,,        CLR TR0
-0246,,t0r,t0r:
-0246,41 06,,        AJMP write2Displays
-0248,22,,        RET
-,,,
-,,,
+0250,,timer0Rotina,timer0Rotina:
+0250,DB 09,,        DJNZ R3, t0r
+,,,        ;Desligando display, buzzer e led
+0252,D2 80,,        SETB P0.0
+0254,C2 A7,,        CLR displayX
+0256,C2 A6,,        CLR displayY
+0258,C2 8C,,        CLR TR0
+025A,22,,        RET
+025B,,t0r,t0r:
+025B,41 12,,        AJMP write2Displays
+025D,22,,        RET
 ,,,
 ,,,;====================================================================
 000E,,,      END

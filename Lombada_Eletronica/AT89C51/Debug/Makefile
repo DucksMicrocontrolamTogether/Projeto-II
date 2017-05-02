@@ -7,16 +7,16 @@ PROJECT =
 MCU = AT89C51
 COMPILER = "ASEM-51 (Proteus)"
 TARGET = Debug
-SHELL = C:\Windows\system32\cmd.exe
+SHELL = C:\WINDOWS\system32\cmd.exe
 
 ## Tools general options
 
 ## Processing Tools
 ASM=asem.exe
 DDX=ASEMDDX.EXE
-#  C:/Users/Nikito/Desktop/Lombada_Eletronica/AT89C51/Debug/Debug.HEX: TOOL=ASM
+#  C:/Users/gusta/OneDrive/Documents/Faculdade/micro/Respo_micro_git/Projeto-II/Lombada_Eletronica/AT89C51/Debug/Debug.HEX: TOOL=ASM
 #  Post: $(DDX) $(DDXFLAGS) Debug.lst
-#     C:/Users/Nikito/Desktop/Lombada_Eletronica/AT89C51/main.asm
+#     C:/Users/gusta/OneDrive/Documents/Faculdade/micro/Respo_micro_git/Projeto-II/Lombada_Eletronica/AT89C51/main.asm
 
 # Build tree:
 all:	Debug
